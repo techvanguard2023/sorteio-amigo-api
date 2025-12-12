@@ -1,59 +1,101 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sorteio Amigo API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Descrição
 
-## About Laravel
+API Backend para o sistema de Amigo Secreto ("Sorteio Amigo"). Desenvolvida em Laravel, esta API fornece toda a lógica para autenticação, gerenciamento de grupos, realização de sorteios e listas de desejos.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+O frontend deste projeto reside em um repositório separado (cliente React/Mobile).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tecnologias
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **PHP** >= 8.2
+- **Laravel Framework**
+- **SQLite** (Banco de dados padrão)
+- **Sanctum** (Autenticação)
 
-## Learning Laravel
+## Instalação
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Siga os passos abaixo para rodar o projeto localmente:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. **Clone o repositório**
+   ```bash
+   git clone <url-do-repositorio>
+   cd sorteio-amigo-api
+   ```
 
-## Laravel Sponsors
+2. **Instale as dependências do PHP**
+   ```bash
+   composer install
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+3. **Configure as variáveis de ambiente**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-### Premium Partners
+4. **Configure o Banco de Dados (SQLite)**
+   Por padrão, o projeto usa SQLite. Certifique-se de criar o arquivo do banco:
+   ```bash
+   # Linux/Mac
+   touch database/database.sqlite
+   
+   # Windows (PowerShell)
+   New-Item -ItemType File -Path database/database.sqlite
+   ```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+5. **Rode as migrações**
+   ```bash
+   php artisan migrate
+   ```
 
-## Contributing
+6. **Inicie o servidor**
+   ```bash
+   php artisan serve
+   ```
+   O servidor estará rodando em `http://localhost:8000`.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Rotas da API (V1)
 
-## Code of Conduct
+Todas as rotas são prefixadas com `/api/v1`.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Autenticação (Públicas)
+- `POST /register` - Criar nova conta
+- `POST /login` - Autenticar usuário
+- `GET /invitations/{invite_code}` - Visualizar convite público
 
-## Security Vulnerabilities
+### Rotas Protegidas (Requer Header `Authorization: Bearer <token>`)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+#### Usuário
+- `GET /user` - Dados do usuário logado
+- `POST /logout` - Encerrar sessão
 
-## License
+#### Grupos
+- `GET /groups` - Listar grupos do usuário
+- `POST /groups` - Criar novo grupo
+- `GET /groups/{group}` - Detalhes do grupo
+- `PUT /groups/{group}` - Atualizar grupo
+- `DELETE /groups/{group}` - Excluir grupo
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+#### Sorteio
+- `POST /groups/{group}/draw` - Realizar o sorteio (apenas dono/admin)
+- `GET /groups/{group}/draw` - Ver resultado do sorteio (quem eu tirei)
+
+#### Convites
+- `POST /invitations/{invite_code}/accept` - Aceitar convite para entrar no grupo
+
+#### Participantes & Wishlist
+- `PUT /participants/{participant}` - Atualizar perfil no grupo (tamanho de camisa, notas, etc.)
+- `POST /participants/wishlist` - Adicionar item à lista de desejos
+- `PUT /participants/wishlist/{wishlist_item}` - Atualizar item
+- `DELETE /participants/wishlist/{wishlist_item}` - Remover item
+
+## Estrutura do Projeto
+
+- `app/Http/Controllers/Api`: Controladores da API
+- `routes/api.php`: Definição de rotas
+- `database/migrations`: Definição do esquema do banco de dados
+
+## Licença
+
+Este projeto é open-source e licenciado sob a [MIT license](https://opensource.org/licenses/MIT).
