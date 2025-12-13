@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\GroupController;
 use App\Http\Controllers\Api\DrawController;
 use App\Http\Controllers\Api\InvitationController;
 use App\Http\Controllers\Api\WishlistController;
+use App\Http\Controllers\Api\PushController;
 
 Route::prefix('v1')->group(function () {
 
@@ -29,6 +30,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/user', function (Request $request) {
             return $request->user();
         });
+
+        Route::post('/push/subscribe', [PushController::class, 'subscribe']);
+        Route::post('/push/unsubscribe', [PushController::class, 'unsubscribe']);
 
         // Grupos
         Route::apiResource('groups', GroupController::class);
