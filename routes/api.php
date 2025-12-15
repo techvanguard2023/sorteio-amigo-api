@@ -36,6 +36,7 @@ Route::prefix('v1')->group(function () {
 
         // Grupos
         Route::apiResource('groups', GroupController::class);
+        Route::delete('/groups/{group}/participants/{participant}', [GroupController::class, 'removeParticipant']);
 
         // Sorteio
         Route::post('/groups/{group}/draw', [DrawController::class, 'store']);

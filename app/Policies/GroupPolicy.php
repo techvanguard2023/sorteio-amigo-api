@@ -50,4 +50,20 @@ class GroupPolicy
     {
         return $group->organizer_id === $user->id;
     }
+
+    /**
+     * Determine if the user can remove a participant from the group.
+     * Organizer can remove anyone.
+     * User can remove themselves.
+     */
+    public function removeParticipant(User $user, Group $group, $participant): bool
+    {
+        // Allow if user is the organizer
+        if ($group->organizer_id === $user->id) {
+            return true;
+        }
+
+        // Allow if user is removing themselves
+        return $participant->user_id === $user->id;
+    }
 }

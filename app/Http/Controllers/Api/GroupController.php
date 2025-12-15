@@ -126,4 +126,19 @@ class GroupController extends Controller
 
         return response()->json(null, 204);
     }
+
+    public function removeParticipant(Group $group, $participantId)
+    {
+        $participant = $group->participants()->findOrFail($participantId);
+
+        $this->authorize('removeParticipant', [$group, $participant]);
+
+        if ($group->status === 'drawn') {
+            return response()->json(['message' => 'Cannot remove participant after draw.'], 400);
+        }
+
+        $participant->delete();
+
+        return response()->json(null, 204);
+    }
 }
