@@ -91,4 +91,39 @@ class GroupController extends Controller
 
         return response()->json($group);
     }
+
+    public function update(Request $request, Group $group)
+    {
+        $this->authorize('update', $group);
+
+        $validated = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'description' => 'nullable|string',
+            'suggestedValue' => 'sometimes|required|numeric|min:0',
+            'drawDate' => 'sometimes|required|date',
+            'revealDate' => 'nullable|date|after_or_equal:drawDate',
+            'rules' => 'nullable|string',
+        ]);
+
+        $data = [];
+        if (array_key_exists('name', $validated)) $data['name'] = $validated['name'];
+        if (array_key_exists('description', $validated)) $data['description'] = $validated['description'];
+        if (array_key_exists('suggestedValue', $validated)) $data['suggested_value'] = $validated['suggestedValue'];
+        if (array_key_exists('drawDate', $validated)) $data['draw_date'] = $validated['drawDate'];
+        if (array_key_exists('revealDate', $validated)) $data['reveal_date'] = $validated['revealDate'];
+        if (array_key_exists('rules', $validated)) $data['rules'] = $validated['rules'];
+        
+        $group->update($data);
+
+        return response()->json($group);
+    }
+
+    public function destroy(Group $group)
+    {
+        $this->authorize('delete', $group);
+        
+        $group->delete();
+
+        return response()->json(null, 204);
+    }
 }
