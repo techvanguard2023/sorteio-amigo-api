@@ -31,32 +31,32 @@ class WishlistController extends Controller
     /**
      * Atualiza um item da lista de desejos.
      */
-    public function update(Request $request, Participant $participant, WishlistItem $wishlistItem)
+    public function update(Request $request, Participant $participant, WishlistItem $wishlist)
     {
         // Autorização: Garante que o usuário logado é o dono deste item da lista.
-        $this->authorize('update', $wishlistItem);
+        $this->authorize('update', $wishlist);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'link' => 'nullable|url|max:2048',
         ]);
 
-        $wishlistItem->update($validated);
+        $wishlist->update($validated);
 
-        return response()->json($wishlistItem);
+        return response()->json($wishlist);
     }
 
     /**
      * Remove um item da lista de desejos.
      */
-    public function destroy(Participant $participant, WishlistItem $wishlistItem)
+    public function destroy(Participant $participant, WishlistItem $wishlist)
     {
         // Autorização
-        $this->authorize('delete', $wishlistItem);
+        $this->authorize('delete', $wishlist);
         
-        $wishlistItem->delete();
+        $wishlist->delete();
 
-        return response()->json(null, 204); // Resposta "No Content"
+        return response()->json(null, 204);
     }
 
 
