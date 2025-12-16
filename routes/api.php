@@ -26,6 +26,7 @@ Route::prefix('v1')->group(function () {
 
     // Rotas protegidas (exigem autenticação)
     Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/change-password', [AuthController::class, 'changePassword']);
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/user', function (Request $request) {
             return $request->user();
